@@ -1,3 +1,9 @@
+@font-face { font-family: GameofThrones; src: url('../fonts/game-of-thrones/GameofThrones.TTF'); } 
+
+h1 {
+  font-family: GameofThrones;
+  text-align: center;
+}
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -5,4 +11,38 @@ body {
 
 a {
   color: #00B7FF;
+}
+
+.sidebar {
+  position: relative;
+  float: left;
+  width: 25%;
+  height: 90%;
+  min-height: 90%;
+}
+
+.middle {
+  position: relative;
+  float: left;
+  width: 50%;
+  height: 90%;
+  min-height: 90%;
+}
+
+.titlebar {
+  position: relative;
+  width: 100%;
+  height: 10%;
+  min-height: 10%;
+}
+
+.draughtboard {
+  position: absolute;
+  top: calc(50% + 15px);
+  left: calc(50% - 286px);
+  width: 512px;
+  height: 512px;
+  border: solid;
+  border-width: 15px;
+  border-color: gray;
 }
