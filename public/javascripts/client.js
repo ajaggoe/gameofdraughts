@@ -14,8 +14,10 @@ window.onload = function() {
 
     var Board = {
         board: gameBoard,
+        score: {player1: 0, player2: 0},
         player1pieces: 12,
         player2pieces: 12,
+        playerTurn: 1,
         tiles: $('div.tile'),
         location: ['0px','64px','128px','192px','256px','320px','384px','448px'],
         
@@ -49,6 +51,8 @@ window.onload = function() {
                     if(this.board[row][column] > 12) {
                         let piece = document.createElement('div');
                         piece.id = this.board[row][column].toString();
+                        piece.classList.add('piece');
+                        piece.style.display = 'inline-box';
                         piece.style.width = '60px';
                         piece.style.height = '60px';
                         piece.style.margin = '2px';
@@ -64,6 +68,8 @@ window.onload = function() {
                     else if(this.board[row][column] < 13 && this.board[row][column] > 0) {
                         let piece = document.createElement('div');
                         piece.id = this.board[row][column].toString();
+                        piece.classList.add('piece');
+                        piece.style.display = 'inline-box';
                         piece.style.width = '60px';
                         piece.style.height = '60px';
                         piece.style.margin = '2px';
@@ -80,7 +86,26 @@ window.onload = function() {
             }
         },
 
-            
+        // returns 0 if nobody won, 1 if p1 won, 2 if p2 won
+        checkIfWon: function() {
+            if(this.score.player1 == 12) { return 1; }
+            if(this.score.player2 == 12) { return 2; }
+            return 0;
+        },
+
+        // changes the players turn, and sets the game-status text
+        changePlayer: function() {
+            if(this.player == 1) {
+                $('.game-status').html('Opponents turn');
+                this.player = 2;
+                return;
+            }
+            if(this.player == 2) {
+                $('.game-status').html('Your turn');
+                this.player = 1;
+                return;
+            }
+        },            
         
     }
 
@@ -115,26 +140,25 @@ window.onload = function() {
 
     Board.init();
 }
-/*
-function Tile{
 
-}
-
-function Piece{
-    func canMove(piece){
-
-    }
-}
-function canJump(piece){
-
-}
-
-function playerMove{
-
-}
-
-function playerWon{
-
-}
+/* 
+EVENTS
 */
+
+$('.piece').click(function() {
+    var selected;
+    var isPlayersTurn = function() {
+        if($(this).parent().attr('class') == "redpiece") {
+            return 2 == parseInt(Board.playerTurn);
+        }
+        if($(this).parent().attr('class') == "whitepiece") {
+            return 2 == parseInt(Board.playerTurn);
+        }
+    }
+    if(isPlayersTurn) {
+        if($(this).hasClass('selected')) selected = true;
+        $('.pieces').each(function(index) { $('.piece').eq(index).removeClass('selected') });
+        if(!selected) { selected = true; }
+    }
+});
 

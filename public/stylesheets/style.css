@@ -46,3 +46,9 @@ a {
   border-width: 15px;
   border-color: gray;
 }
+
+.selected {
+  border: solid;
+  border-color: rgb(56, 241, 56);
+  border-width: 10px;
+}
