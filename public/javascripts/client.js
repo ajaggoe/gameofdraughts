@@ -10,6 +10,8 @@ window.onload = function() {
 
     //used to save all piece instances
     var pieces = [];
+    //used to save all tile instances
+    var Tiles = [];
 
 
     var Board = {
@@ -18,7 +20,7 @@ window.onload = function() {
         player1pieces: 12,
         player2pieces: 12,
         playerTurn: 1,
-        tiles: $('div.tile'),
+        tiles: $('div.tiles'),
         location: ['0px','64px','128px','192px','256px','320px','384px','448px'],
         
         init: function (){
@@ -26,7 +28,11 @@ window.onload = function() {
                 for(column in this.board[row]) {
                     if(row%2==0) {
                         if(column%2==1) {
+                            var index = (parseInt(row*8) + parseInt(column)).toString();
+
                             let tile = document.createElement('div');
+                            tile.classList.add("tile");
+                            tile.id = 't'+index.toString();
                             tile.style.width = '64px';
                             tile.style.height = '64px';
                             tile.style.backgroundColor = 'black';
@@ -34,53 +40,61 @@ window.onload = function() {
                             tile.style.top = this.location[row];
                             tile.style.left = this.location[column];
                             this.tiles.append(tile); 
+
+                            Tiles[index] = new Tile($('#'+tile.id), [parseInt(column),parseInt(row)]);
                         } 
                         
                     }else {
                         if(column%2==0) {
+                            var index = (parseInt(row*8) + parseInt(column)).toString();
+
                             let tile = document.createElement('div');
+                            tile.classList.add("tile");
+                            tile.id = 't'+index.toString();
                             tile.style.width = '64px';
                             tile.style.height = '64px';
                             tile.style.backgroundColor = 'black';
                             tile.style.position = 'absolute';
                             tile.style.top = this.location[row];
                             tile.style.left = this.location[column];
-                            this.tiles.append(tile); 
+                            this.tiles.append(tile);                           
+
+                            Tiles[index] = new Tile($('#'+tile.id), [parseInt(column),parseInt(row)]);
                         }
                     }
                     if(this.board[row][column] > 12) {
                         let piece = document.createElement('div');
                         piece.id = this.board[row][column].toString();
                         piece.classList.add('piece');
-                        piece.style.display = 'inline-box';
-                        piece.style.width = '60px';
-                        piece.style.height = '60px';
-                        piece.style.margin = '2px';
-                        piece.style.borderRadius = '50%';
-                        piece.style.backgroundColor = 'red';
-                        piece.style.position = 'absolute';
+                        // piece.style.display = 'inline-box';
+                        // piece.style.width = '60px';
+                        // piece.style.height = '60px';
+                        // piece.style.margin = '2px';
+                        // piece.style.borderRadius = '50%';
+                        // piece.style.backgroundColor = 'red';
+                        // piece.style.position = 'absolute';
                         piece.style.top = this.location[row];
                         piece.style.left = this.location[column];
                         $('.redpiece').append(piece);
 
-                        pieces[this.board[row][column]] = new Piece($("#"+this.board[row][column]),[parseInt(row),parseInt(column)]);
+                        pieces[this.board[row][column]] = new Piece($("#"+this.board[row][column]),[parseInt(column),parseInt(row)]);
                     }
                     else if(this.board[row][column] < 13 && this.board[row][column] > 0) {
                         let piece = document.createElement('div');
                         piece.id = this.board[row][column].toString();
                         piece.classList.add('piece');
-                        piece.style.display = 'inline-box';
-                        piece.style.width = '60px';
-                        piece.style.height = '60px';
-                        piece.style.margin = '2px';
-                        piece.style.borderRadius = '50%';
-                        piece.style.backgroundColor = 'white';
-                        piece.style.position = 'absolute';
+                        // piece.style.display = 'inline-box';
+                        // piece.style.width = '60px';
+                        // piece.style.height = '60px';
+                        // piece.style.margin = '2px';
+                        // piece.style.borderRadius = '50%';
+                        // piece.style.backgroundColor = 'white';
+                        // piece.style.position = 'absolute';
                         piece.style.top = this.location[row];
                         piece.style.left = this.location[column];
                         $('.whitepiece').append(piece);
 
-                        pieces[this.board[row][column]] = new Piece($("#"+this.board[row][column]),[parseInt(row),parseInt(column)]);
+                        pieces[this.board[row][column]] = new Piece($("#"+this.board[row][column]),[parseInt(column),parseInt(row)]);
                     }
                 }
             }
@@ -95,17 +109,55 @@ window.onload = function() {
 
         // changes the players turn, and sets the game-status text
         changePlayer: function() {
-            if(this.player == 1) {
+            if(this.playerTurn == 1) {
                 $('.game-status').html('Opponents turn');
-                this.player = 2;
+                this.playerTurn = 2;
+                console.log('changu playaru');
                 return;
             }
-            if(this.player == 2) {
+            if(this.playerTurn == 2) {
                 $('.game-status').html('Your turn');
-                this.player = 1;
+                this.playerTurn = 1;
                 return;
             }
-        },            
+        }, 
+        
+        isPlayerTurn: function(element) {
+            if(element.parent().attr("class") == "redpiece" && this.playerTurn == 2) return true;
+            if(element.parent().attr("class") == "whitepiece" && this.playerTurn == 1) return true;
+            return false;
+        },
+
+        isValidPosition: function(position) {
+            if(this.board[position[1]][position[0]] == 0){ 
+                var piece = pieces[parseInt($('.piece.selected').attr('id'))];
+                
+                if(piece) {
+                    if(piece.position[0]-position[0] === 1 || piece.position[0]-position[0] === -1) {
+                            // console.log("PLACE");
+                            // console.log(piece.position[1]-position[1]);
+                        if(piece.player == '1' && piece.position[1]-position[1] == 1) {
+
+                            return true;
+                        }
+                        if(piece.player == '2' && piece.position[1]-position[1] == -1) {
+                            return true;
+                        }
+                        if(piece.isKing) {
+                            if(piece.player == '1' && piece.position[1]-position[1] == -1){
+                                return true;
+                            }
+                            if(piece.player == '2' && piece.position[1]-position[1] == 1) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            else return false;
+        }
+
+        
         
     }
 
@@ -115,6 +167,17 @@ window.onload = function() {
         this.element = element;
         //position on the board [x,y]
         this.position = position;
+
+        // this.highlight = function() {
+        //     // for(row in Board.board){
+        //     //     for(column in Board.board[row]){
+        //     //         if(isValidPosition([column, row])){
+        //     //             $(this).addClass("available");
+        //     //         }
+        //     //     }
+        //     // }
+        //     this.element.addClass("available");
+        // };
     }
 
     // position = [x,y]
@@ -132,33 +195,115 @@ window.onload = function() {
         }
         this.isKing = false;
         //TODO
-        // this.makeKing = function () {};
+        this.makeKing = function () {
+            if(this.player == 1) {
+                if(this.position[1] == 0) {
+                    this.isKing = true;
+                    this.element.css('backgroundColor', 'lightgray');
+                }
+            }
+            if(this.player == 2) {
+                if(this.position[1] == 7) {
+                    this.element.css('backgroundColor', 'pink');
+                }
+            }
+        };
 
         // all pieces are allowed to move initially
         this.canMove = true;
+
+        this.cleanUpCode = function(pos){
+            checkTiles().forEach(function(tile){
+                tile.element.removeClass('available');
+            });
+
+            this.element.css('top', Board.location[this.position[1]]);
+            this.element.css("left", Board.location[this.position[0]]);
+            this.element.removeClass("selected");
+            console.log("new position: x = "+pos[0]+", y = "+pos[1]);
+        }
+        // move function for the selected piece
+        // piece selection in at bottom of document
+        this.move = function(pos) {
+            if(Board.isValidPosition(pos)) {
+                Board.board[pos[1]][pos[0]] = Board.board[this.position[1]][this.position[0]];
+                Board.board[this.position[1]][this.position[0]] = 0;
+                this.position = pos;
+                this.cleanUpCode(pos);
+                this.makeKing();
+                Board.changePlayer();
+            }
+        }
     }
 
     Board.init();
-}
+
 
 /* 
 EVENTS
 */
 
-$('.piece').click(function() {
-    var selected;
-    var isPlayersTurn = function() {
-        if($(this).parent().attr('class') == "redpiece") {
-            return 2 == parseInt(Board.playerTurn);
+    $('div.piece').on("click", function() {
+        //var tileHighlights = checkTiles();
+        var player = Board.isPlayerTurn($(this));
+        
+        console.log("piece selected");  
+        if(player) {
+            console.log("correct player");
+            if($(this).hasClass("selected")) {
+
+                checkTiles().forEach(function(tile){
+                    tile.element.removeClass('available');
+                });
+
+                $(this).removeClass("selected"); 
+            }
+            else {
+                checkTiles().forEach(function(tile){
+                    tile.element.removeClass('available');
+                });
+
+                $(".piece").each(function() { $(this).removeClass("selected"); });
+                $(this).addClass("selected");
+
+                checkTiles().forEach(function(tile){
+                    tile.element.addClass('available');
+                })
+            }
+
+            
+
+
+        } else { console.log("incorrect player... NO"); }
+    
+    $('.tile.available').on('click', function(){
+        //select the tile selected
+        var piece = pieces[parseInt($('.piece.selected').attr('id'))];
+        console.log("attricute piece id "+$('.piece.selected').attr('id'))
+        var tile = Tiles[parseInt($(this).attr('id').replace('t',''))];
+
+
+        console.log("tile id "+$(this).attr('id'));
+        piece.move(tile.position);
+        });
+    });
+
+    function checkTiles() {
+        var availableTiles = [];
+        for(row in Board.board) {
+            for(column in Board.board[row]) {
+                if(Tiles[parseInt(parseInt(row*8) + parseInt(column))]) {
+                    var tileToCheck = Tiles[parseInt(parseInt(row*8) + parseInt(column))];
+                    if(Board.isValidPosition(tileToCheck.position)) {
+                        //tileToCheck.element.addClass('available');
+                        availableTiles.push(tileToCheck);
+                    }
+                }
+            }
         }
-        if($(this).parent().attr('class') == "whitepiece") {
-            return 2 == parseInt(Board.playerTurn);
-        }
+
+        return availableTiles;
     }
-    if(isPlayersTurn) {
-        if($(this).hasClass('selected')) selected = true;
-        $('.pieces').each(function(index) { $('.piece').eq(index).removeClass('selected') });
-        if(!selected) { selected = true; }
-    }
-});
+
+}
 

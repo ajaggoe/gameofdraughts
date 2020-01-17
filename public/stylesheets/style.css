@@ -7,6 +7,7 @@ h1 {
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: wheat;
 }
 
 a {
@@ -45,10 +46,43 @@ a {
   border: solid;
   border-width: 15px;
   border-color: gray;
+  background-color: rgb(240, 236, 230);
 }
 
-.selected {
+.whitepiece .piece {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  margin: 2px;
+  background-color: white;
+  border: solid;
+  border-width: 10px;
+  border-color: white;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.redpiece .piece {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  margin: 2px;
+  background-color: red;
+  border: solid;
+  border-width: 10px;
+  border-color: red;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.piece.selected {
   border: solid;
   border-color: rgb(56, 241, 56);
   border-width: 10px;
+}
+
+.tile.available {
+  box-shadow: 0 0 10px 5px #d0e22c;
 }
