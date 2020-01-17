@@ -213,9 +213,7 @@ window.onload = function() {
         this.canMove = true;
 
         this.cleanUpCode = function(pos){
-            checkTiles().forEach(function(tile){
-                tile.element.removeClass('available');
-            });
+            removeAvailable();
 
             this.element.css('top', Board.location[this.position[1]]);
             this.element.css("left", Board.location[this.position[0]]);
@@ -252,23 +250,17 @@ EVENTS
             console.log("correct player");
             if($(this).hasClass("selected")) {
 
-                checkTiles().forEach(function(tile){
-                    tile.element.removeClass('available');
-                });
+                removeAvailable();
 
                 $(this).removeClass("selected"); 
             }
             else {
-                checkTiles().forEach(function(tile){
-                    tile.element.removeClass('available');
-                });
+                removeAvailable();
 
                 $(".piece").each(function() { $(this).removeClass("selected"); });
                 $(this).addClass("selected");
 
-                checkTiles().forEach(function(tile){
-                    tile.element.addClass('available');
-                })
+                addAvailable();
             }
 
             
@@ -303,6 +295,18 @@ EVENTS
         }
 
         return availableTiles;
+    }
+
+    function removeAvailable() {
+        checkTiles().forEach(function(tile){
+            tile.element.removeClass('available');
+        });
+    }
+
+    function addAvailable() {
+        checkTiles().forEach(function(tile){
+            tile.element.addClass('available');
+        });
     }
 
 }
