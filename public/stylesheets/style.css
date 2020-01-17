@@ -83,6 +83,15 @@ a {
   border-width: 10px;
 }
 
+.piece:hover {
+  box-shadow: 0 0 10px 5px #20f868;
+}
+
 .tile.available {
   box-shadow: 0 0 10px 5px #d0e22c;
+
+}
+
+.tile.available:hover{
+  box-shadow: 0 0 10px 5px #20f868;;
 }

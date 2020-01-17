@@ -204,6 +204,7 @@ window.onload = function() {
             }
             if(this.player == 2) {
                 if(this.position[1] == 7) {
+                    this.isKing = true;
                     this.element.css('backgroundColor', 'pink');
                 }
             }
@@ -213,8 +214,6 @@ window.onload = function() {
         this.canMove = true;
 
         this.cleanUpCode = function(pos){
-            removeAvailable();
-
             this.element.css('top', Board.location[this.position[1]]);
             this.element.css("left", Board.location[this.position[0]]);
             this.element.removeClass("selected");
@@ -224,6 +223,7 @@ window.onload = function() {
         // piece selection in at bottom of document
         this.move = function(pos) {
             if(Board.isValidPosition(pos)) {
+                removeAvailable();
                 Board.board[pos[1]][pos[0]] = Board.board[this.position[1]][this.position[0]];
                 Board.board[this.position[1]][this.position[0]] = 0;
                 this.position = pos;
