@@ -9,10 +9,9 @@ window.onload = function() {
                         [4     ,-1   ,3     ,-1     ,2      ,-1     ,1      ,-1]];
 
     //used to save all piece instances
-    var pieces = [];
+    var Pieces = [];
     //used to save all tile instances
     var Tiles = [];
-
 
     var Board = {
         board: gameBoard,
@@ -77,7 +76,7 @@ window.onload = function() {
                         piece.style.left = this.location[column];
                         $('.redpiece').append(piece);
 
-                        pieces[this.board[row][column]] = new Piece($("#"+this.board[row][column]),[parseInt(column),parseInt(row)]);
+                        Pieces[this.board[row][column]] = new Piece($("#"+this.board[row][column]),[parseInt(column),parseInt(row)]);
                     }
                     else if(this.board[row][column] < 13 && this.board[row][column] > 0) {
                         let piece = document.createElement('div');
@@ -94,10 +93,13 @@ window.onload = function() {
                         piece.style.left = this.location[column];
                         $('.whitepiece').append(piece);
 
-                        pieces[this.board[row][column]] = new Piece($("#"+this.board[row][column]),[parseInt(column),parseInt(row)]);
+                        Pieces[this.board[row][column]] = new Piece($("#"+this.board[row][column]),[parseInt(column),parseInt(row)]);
                     }
                 }
             }
+
+            this.whoCanMove();
+            removePieceAvailability(this.playerTurn);
         },
 
         // returns 0 if nobody won, 1 if p1 won, 2 if p2 won
@@ -110,54 +112,89 @@ window.onload = function() {
         // changes the players turn, and sets the game-status text
         changePlayer: function() {
             if(this.playerTurn == 1) {
-                $('.game-status').html('Opponents turn');
+                $('.game-status').html('Red\'s turn');
                 this.playerTurn = 2;
-                console.log('changu playaru');
+                console.log('changu puleyaru');
+                removePieceAvailability(this.playerTurn);
                 return;
             }
             if(this.playerTurn == 2) {
-                $('.game-status').html('Your turn');
+                $('.game-status').html('White\'s turn');
                 this.playerTurn = 1;
+                console.log('changu puleyaru');
+                removePieceAvailability(this.playerTurn);
                 return;
             }
         }, 
         
+        // checks if the selected piece is of the player in turn
         isPlayerTurn: function(element) {
             if(element.parent().attr("class") == "redpiece" && this.playerTurn == 2) return true;
             if(element.parent().attr("class") == "whitepiece" && this.playerTurn == 1) return true;
             return false;
         },
 
-        isValidPosition: function(position) {
-            if(this.board[position[1]][position[0]] == 0){ 
-                var piece = pieces[parseInt($('.piece.selected').attr('id'))];
-                
-                if(piece) {
-                    if(piece.position[0]-position[0] === 1 || piece.position[0]-position[0] === -1) {
-                            // console.log("PLACE");
-                            // console.log(piece.position[1]-position[1]);
-                        if(piece.player == '1' && piece.position[1]-position[1] == 1) {
+        //piece = the piece to move; position = position to move to
+        isValidPosition: function(piece, position) {
+            if(position[0] > -1 && position[0] < 8 && position[1] > -1 && position[1] < 8) {
+                if(this.board[position[1]][position[0]] == 0){ 
+                    var piece = piece;
+                    
+                    if(piece) {
+                        
+                        if(piece.position[0]-position[0] === 1 || piece.position[0]-position[0] === -1) {
+                                // console.log("PLACE");
+                                // console.log(piece.position[1]-position[1]);
+                            if(piece.player == '1' && piece.position[1]-position[1] == 1) {
 
-                            return true;
-                        }
-                        if(piece.player == '2' && piece.position[1]-position[1] == -1) {
-                            return true;
-                        }
-                        if(piece.isKing) {
-                            if(piece.player == '1' && piece.position[1]-position[1] == -1){
                                 return true;
                             }
-                            if(piece.player == '2' && piece.position[1]-position[1] == 1) {
+                            if(piece.player == '2' && piece.position[1]-position[1] == -1) {
                                 return true;
+                            }
+                            if(piece.isKing) {
+                                if(piece.player == '1' && piece.position[1]-position[1] == -1){
+                                    return true;
+                                }
+                                if(piece.player == '2' && piece.position[1]-position[1] == 1) {
+                                    return true;
+                                }
                             }
                         }
                     }
                 }
+                else return false;
             }
-            else return false;
-        }
+        },
 
-        
+        // loops through all pieces and checks who can move and sets the canMove attr to true;
+        // and adds the class "available" to that piece
+        whoCanMove: function() {
+            for(index in Pieces) {
+                if(Pieces[index]) {
+                    let piece = Pieces[index];
+                    piece.element.removeClass('available');
+                    
+                    if(piece.player == 1) {
+                        if(this.isValidPosition(piece, [piece.position[0]-1, piece.position[1]-1]) || this.isValidPosition(piece, [piece.position[0]+1, piece.position[1]-1])) {
+                            piece.canMove = true;
+                            piece.element.addClass("available");
+                            console.log(piece.element.attr('id')+' is available');
+                        }
+                    }
+                    else if(piece.player == 2) {
+                        if(this.isValidPosition(piece, [piece.position[0]-1, piece.position[1]+1]) || this.isValidPosition(piece, [piece.position[0]+1, piece.position[1]+1])) {
+                            piece.canMove = true;
+                            piece.element.addClass('available');
+                            console.log(piece.element.attr('id')+' is available');
+                        }
+                    }
+                    else {
+                        piece.canMove = false;
+                    }
+                }
+            }
+        }
         
     }
 
@@ -167,17 +204,6 @@ window.onload = function() {
         this.element = element;
         //position on the board [x,y]
         this.position = position;
-
-        // this.highlight = function() {
-        //     // for(row in Board.board){
-        //     //     for(column in Board.board[row]){
-        //     //         if(isValidPosition([column, row])){
-        //     //             $(this).addClass("available");
-        //     //         }
-        //     //     }
-        //     // }
-        //     this.element.addClass("available");
-        // };
     }
 
     // position = [x,y]
@@ -210,8 +236,8 @@ window.onload = function() {
             }
         };
 
-        // all pieces are allowed to move initially
-        this.canMove = true;
+        // not all pieces are allowed to move initially
+        this.canMove = false;
 
         this.cleanUpCode = function(pos){
             this.element.css('top', Board.location[this.position[1]]);
@@ -222,13 +248,14 @@ window.onload = function() {
         // move function for the selected piece
         // piece selection in at bottom of document
         this.move = function(pos) {
-            if(Board.isValidPosition(pos)) {
+            if(Board.isValidPosition(this, pos)) {
                 removeAvailable();
                 Board.board[pos[1]][pos[0]] = Board.board[this.position[1]][this.position[0]];
                 Board.board[this.position[1]][this.position[0]] = 0;
                 this.position = pos;
                 this.cleanUpCode(pos);
                 this.makeKing();
+                Board.whoCanMove();
                 Board.changePlayer();
             }
         }
@@ -242,6 +269,7 @@ EVENTS
 */
 
     $('div.piece').on("click", function() {
+        console.log('test');
         //var tileHighlights = checkTiles();
         var player = Board.isPlayerTurn($(this));
         
@@ -270,7 +298,7 @@ EVENTS
     
     $('.tile.available').on('click', function(){
         //select the tile selected
-        var piece = pieces[parseInt($('.piece.selected').attr('id'))];
+        var piece = Pieces[parseInt($('.piece.selected').attr('id'))];
         console.log("attricute piece id "+$('.piece.selected').attr('id'))
         var tile = Tiles[parseInt($(this).attr('id').replace('t',''))];
 
@@ -286,7 +314,8 @@ EVENTS
             for(column in Board.board[row]) {
                 if(Tiles[parseInt(parseInt(row*8) + parseInt(column))]) {
                     var tileToCheck = Tiles[parseInt(parseInt(row*8) + parseInt(column))];
-                    if(Board.isValidPosition(tileToCheck.position)) {
+                    var piece = Pieces[parseInt($('.piece.selected').attr('id'))];
+                    if(Board.isValidPosition(piece, tileToCheck.position)) {
                         //tileToCheck.element.addClass('available');
                         availableTiles.push(tileToCheck);
                     }
@@ -307,6 +336,16 @@ EVENTS
         checkTiles().forEach(function(tile){
             tile.element.addClass('available');
         });
+    }
+
+    function removePieceAvailability(playerTurn) {
+        for(index in Pieces) {
+            if(Pieces[index] && playerTurn == 1) {
+                if(parseInt(Pieces[index].element.attr("id")) > 12) { Pieces[index].element.removeClass('available'); }
+            }else if(Pieces[index] && playerTurn == 2) {
+                if(parseInt(Pieces[index].element.attr("id")) < 13) { Pieces[index].element.removeClass('available'); }
+            }
+        }
     }
 
 }

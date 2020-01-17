@@ -77,13 +77,13 @@ a {
   cursor: pointer;
 }
 
-.piece.selected {
+.piece.available.selected {
   border: solid;
   border-color: rgb(56, 241, 56);
   border-width: 10px;
 }
 
-.piece:hover {
+.piece.available:hover {
   box-shadow: 0 0 10px 5px #20f868;
 }
 
