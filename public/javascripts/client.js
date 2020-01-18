@@ -1,4 +1,7 @@
 window.onload = function() {
+
+    //gameBoard.position[1] == x
+    //gameBoard.position[0] == y
     var gameBoard = [   [-1    ,21   ,-1    ,22     ,-1     ,23     ,-1     ,24],
                         [17    ,-1   ,18    ,-1     ,19     ,-1     ,20     ,-1],
                         [-1    ,13   ,-1    ,14     ,-1     ,15     ,-1     ,16],
@@ -23,6 +26,7 @@ window.onload = function() {
         location: ['0px','64px','128px','192px','256px','320px','384px','448px'],
         
         init: function (){
+            this.changeScore();
             for(row in this.board) {
                 for(column in this.board[row]) {
                     if(row%2==0) {
@@ -112,14 +116,14 @@ window.onload = function() {
         // changes the players turn, and sets the game-status text
         changePlayer: function() {
             if(this.playerTurn == 1) {
-                $('.game-status').html('Red\'s turn');
+                $('.game-status').html('Red\'s turn!');
                 this.playerTurn = 2;
                 console.log('changu puleyaru');
                 removePieceAvailability(this.playerTurn);
                 return;
             }
             if(this.playerTurn == 2) {
-                $('.game-status').html('White\'s turn');
+                $('.game-status').html('White\'s turn!');
                 this.playerTurn = 1;
                 console.log('changu puleyaru');
                 removePieceAvailability(this.playerTurn);
@@ -194,6 +198,10 @@ window.onload = function() {
                     }
                 }
             }
+        },
+
+        changeScore: function(){
+            $('.values').html('Remaining pieces:<br>'+this.player1pieces+' white pieces<br>'+this.player2pieces+' red pieces');
         }
         
     }
@@ -257,7 +265,41 @@ window.onload = function() {
                 this.makeKing();
                 Board.whoCanMove();
                 Board.changePlayer();
+                // if(this.canJump){
+                //     this.jumpOverPiece();
+                // }
             }
+        }
+
+        this.canJump = function(pos){
+            var xDistance = pos[1]-this.position[1];
+            var yDistance = pos[0]-this.position[1];
+            var tileCheckx = this.position[1]+(xDistance/2);
+            var tileChecky = this.position[0]+(yDistance/2);
+            //out of board check
+            if(newPosition[0] > 7 || newPosition[1] > 7 || newPosition[0] < 0 || newPosition[1] < 0) return false;
+
+            //king check and check the tiles
+            if(this.player == 1 && this.king == false) {
+                if(pos[0] < this.position[0]) {
+                    return false;
+                }
+            } else if (this.player == 2 && this.king == false) {
+                if(pos[0] > this.position[0]) {
+                    return false;
+                }
+            }
+
+
+            return false;
+        },
+
+        this.jumpOverPiece = function(){
+
+        },
+
+        this.canJumpOverAny = function(){
+
         }
     }
 

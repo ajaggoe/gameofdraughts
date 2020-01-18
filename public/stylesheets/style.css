@@ -5,7 +5,7 @@ h1 {
   text-align: center;
 }
 body {
-  padding: 50px;
+  padding: 25px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   background-color: wheat;
 }
@@ -46,6 +46,7 @@ a {
   border: solid;
   border-width: 15px;
   border-color: gray;
+  border-radius: 3px;
   background-color: rgb(240, 236, 230);
 }
 
