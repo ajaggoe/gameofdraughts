@@ -194,7 +194,7 @@ window.onload = function() {
                                 if(piece.player == '1' && this.board[dy/2 + position[1]][dx/2 + position[0]] > 12) {
                                     return true;
                                 }
-                                if(piece.player == '2' && this.board[dy/2 + position[1]][dx/2 + position[0]] < 13 && this.board[dy/2 + position[1]][dx/2 + position[0] + position[0]] > 0) {
+                                if(piece.player == '2' && this.board[dy/2 + position[1]][dx/2 + position[0]] < 13 && this.board[dy/2 + position[1]][dx/2 + position[0]] > 0) {
                                     return true;
                                 }
                             }
@@ -229,6 +229,10 @@ window.onload = function() {
                 normalPieces.forEach(function(piece) {
                     piece.element.addClass('available');
                 })
+            }
+            else {
+                this.changePlayer();
+                this.whoCanMove();
             }
         },
 
@@ -276,22 +280,23 @@ window.onload = function() {
         this.isKing = false;
         //TODO
         this.makeKing = function () {
-            if(this.player == 1) {
-                if(this.position[1] == 0) {
-                    this.isKing = true;
-                    this.element.css('backgroundColor', 'lightgray');
+            if(!this.isKing) {
+                if(this.player == 1) {
+                    if(this.position[1] == 0) {
+                        this.isKing = true;
+                        this.element.css('backgroundColor', 'lightgray');
+                    }
                 }
-            }
-            if(this.player == 2) {
-                if(this.position[1] == 7) {
-                    this.isKing = true;
-                    this.element.css('backgroundColor', 'pink');
+                if(this.player == 2) {
+                    if(this.position[1] == 7) {
+                        this.isKing = true;
+                        this.element.css('backgroundColor', 'pink');
+                    }
                 }
             }
         };
 
         this.remove = function() {
-            debugger;
             Board.board[this.position[1]][this.position[0]] = 0;
             this.element.css('display', 'none');
             Board.changeScore();

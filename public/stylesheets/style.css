@@ -6,7 +6,7 @@ h1 {
 }
 body {
   padding: 25px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-family: GameofThrones;
   background-color: wheat;
 }
 
@@ -14,9 +14,10 @@ a {
   color: #00B7FF;
 }
 
-.sidebar {
+.sidebar1 {
   position: relative;
   float: left;
+  top: 10%;
   width: 25%;
   height: 90%;
   min-height: 90%;
@@ -24,8 +25,18 @@ a {
 
 .middle {
   position: relative;
-  float: left;
+  left: 25%;
+  top: 10%;
   width: 50%;
+  height: 90%;
+  min-height: 90%;
+}
+
+.sidebar2 {
+  position: relative;
+  float: right;
+  top: 10%;
+  width: 25%;
   height: 90%;
   min-height: 90%;
 }
@@ -39,7 +50,7 @@ a {
 
 .draughtboard {
   position: absolute;
-  top: calc(50% + 15px);
+  top: 45%;
   left: calc(50% - 286px);
   width: 512px;
   height: 512px;
@@ -69,10 +80,10 @@ a {
   width: 40px;
   height: 40px;
   margin: 2px;
-  background-color: red;
+  background-color: crimson;
   border: solid;
   border-width: 10px;
-  border-color: red;
+  border-color: crimson;
   border-radius: 50%;
   display: inline-block;
   cursor: pointer;
@@ -84,20 +95,70 @@ a {
   border-width: 10px;
 }
 
+.whitepiece .piece.available {
+  box-shadow: 0 0 10px 5px gold;
+}
+
+.redpiece .piece.available {
+  box-shadow: 0 0 10px 5px rgb(236, 95, 123);
+}
+
 .piece.available:hover {
   box-shadow: 0 0 10px 5px #20f868;
 }
 
-.piece.available {
-  box-shadow: 0 0 10px 5px #d0e22c;
-
-}
-
 .tile.available {
   box-shadow: 0 0 10px 5px #d0e22c;
-
 }
 
 .tile.available:hover{
   box-shadow: 0 0 10px 5px #20f868;;
+}
+
+
+.game-status {
+  position: absolute;
+  top: 150%;
+}
+
+.values {
+  position: absolute;
+  top: 170%;
+}
+
+.wrapper1, .wrapper2 {
+  background-color: aliceblue;
+  border: solid;
+  border-width: 5px;
+  border-color: gray;
+  position: relative;
+  left: 10%;
+  width: 60%;
+  padding-top: 60%;
+}
+
+.wrapper2 {
+  left: 25%;
+}
+
+.stark, .lannister {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: auto;
+}
+
+#text-s {
+  position: absolute;
+  left: 10%;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  color: crimson;  
+}
+
+#text-l {
+  position: absolute;
+  right: 10%;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  color: gold;
 }
