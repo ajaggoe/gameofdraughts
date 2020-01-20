@@ -149,6 +149,24 @@ a {
   height: auto;
 }
 
+#stark-king-logo {
+  position: absolute;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  height: auto;
+}
+
+#lannister-king-logo {
+  position: absolute;
+  display: block;
+  left: 15%;
+  top: 15%;
+  width: 70%;
+  height: auto;
+}
+
 #text-s {
   position: absolute;
   left: 10%;
@@ -161,4 +179,42 @@ a {
   right: 10%;
   text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
   color: gold;
+}
+
+.stark-captured {
+  position: absolute;
+  top: 170%;
+  left: 10%;
+  color: black;
+}
+
+.red-captured {
+  position: absolute;
+  right: 20%;
+  top: 190%;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  background-color: crimson;
+}
+
+.lannister-captured {
+  position: absolute;
+  top: 170%;
+  right: 10%;
+  color: black;
+}
+
+.white-captured {
+  position: absolute;
+  left: 20%;
+  top: 190%;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.center {
+  text-align: center;
 }

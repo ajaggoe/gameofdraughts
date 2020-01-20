@@ -237,7 +237,8 @@ window.onload = function() {
         },
 
         changeScore: function(){
-            $('.values').html('Remaining pieces:<br>'+this.player1pieces+' white pieces<br>'+this.player2pieces+' red pieces');
+            $('.red-captured .center').html(parseInt(12-this.player2pieces));
+            $('.white-captured .center').html(parseInt(12-this.player1pieces));
 
             if(this.player1pieces == 0) {
                 $('.game-status').html('RED HAS WON');
@@ -285,12 +286,14 @@ window.onload = function() {
                     if(this.position[1] == 0) {
                         this.isKing = true;
                         this.element.css('backgroundColor', 'lightgray');
+                        this.element.prepend('<img id="lannister-king-logo" src="data/lannister_king_logo.png">');
                     }
                 }
                 if(this.player == 2) {
                     if(this.position[1] == 7) {
                         this.isKing = true;
                         this.element.css('backgroundColor', 'pink');
+                        this.element.prepend('<img id="stark-king-logo" src="data/stark_king_logo.png">');
                     }
                 }
             }
