@@ -22,11 +22,13 @@ window.onload = function() {
         player1pieces: 12,
         player2pieces: 12,
         playerTurn: 1,
+        opponentJumpAvailable: false,
         tiles: $('div.tiles'),
         location: ['0px','64px','128px','192px','256px','320px','384px','448px'],
         
         init: function (){
             this.changeScore();
+        //    new Audio("../data/NyanCatoriginal.wav").play()
             for(row in this.board) {
                 for(column in this.board[row]) {
                     if(row%2==0) {
@@ -69,13 +71,7 @@ window.onload = function() {
                         let piece = document.createElement('div');
                         piece.id = this.board[row][column].toString();
                         piece.classList.add('piece');
-                        // piece.style.display = 'inline-box';
-                        // piece.style.width = '60px';
-                        // piece.style.height = '60px';
-                        // piece.style.margin = '2px';
-                        // piece.style.borderRadius = '50%';
-                        // piece.style.backgroundColor = 'red';
-                        // piece.style.position = 'absolute';
+
                         piece.style.top = this.location[row];
                         piece.style.left = this.location[column];
                         $('.redpiece').append(piece);
@@ -86,13 +82,7 @@ window.onload = function() {
                         let piece = document.createElement('div');
                         piece.id = this.board[row][column].toString();
                         piece.classList.add('piece');
-                        // piece.style.display = 'inline-box';
-                        // piece.style.width = '60px';
-                        // piece.style.height = '60px';
-                        // piece.style.margin = '2px';
-                        // piece.style.borderRadius = '50%';
-                        // piece.style.backgroundColor = 'white';
-                        // piece.style.position = 'absolute';
+
                         piece.style.top = this.location[row];
                         piece.style.left = this.location[column];
                         $('.whitepiece').append(piece);
@@ -138,8 +128,9 @@ window.onload = function() {
             return false;
         },
 
-        //piece = the piece to move; position = position to move to
-        isValidPosition: function(piece, position) {
+        //piece = the piece to mremvove; position = position to move to
+        isValidNormalPosition: function(piece, position) {
+             
             if(position[0] > -1 && position[0] < 8 && position[1] > -1 && position[1] < 8) {
                 if(this.board[position[1]][position[0]] == 0){ 
                     var piece = piece;
@@ -171,37 +162,85 @@ window.onload = function() {
             }
         },
 
+        isValidJumpPosition: function(piece, position) {
+            if(position[0] > -1 && position[0] < 8 && position[1] > -1 && position[1] < 8) {
+                var dx = piece.position[0]-position[0];
+                var dy = piece.position[1]-position[1];
+                var x = piece.position[0];
+                var y = piece.position[1]
+
+                if(this.board[position[1]][position[0]] == 0) {
+                    if(piece) {
+                        
+                        if(dy == 2 && piece.player == '1') { 
+                            if(dx == 2 || dx == -2) {
+                                if(this.board[dy/2 + position[1]][dx/2 + position[0]] > 12) {
+                                    return true
+                                }
+                            }
+                        } 
+                        if(dy == -2 && piece.player == '2') {
+                           
+                            if(dx == 2 || dx == -2) {
+                                if(this.board[dy/2 + position[1]][dx/2 + position[0]] < 13 && this.board[dy/2 + position[1]][dx/2 + position[0]] > 0) {
+                                    return true
+                                }
+                            }
+
+                        }
+                        if((dy == -2 || dy == 2) && piece.isKing) {
+                            if(dx == 2 || dx == -2) {
+                               
+                                if(piece.player == '1' && this.board[dy/2 + position[1]][dx/2 + position[0]] > 12) {
+                                    return true;
+                                }
+                                if(piece.player == '2' && this.board[dy/2 + position[1]][dx/2 + position[0]] < 13 && this.board[dy/2 + position[1]][dx/2 + position[0] + position[0]] > 0) {
+                                    return true;
+                                }
+                            }
+                           
+                        }
+                    }
+                }
+            }
+            return false;
+        },
+
         // loops through all pieces and checks who can move and sets the canMove attr to true;
         // and adds the class "available" to that piece
         whoCanMove: function() {
-            for(index in Pieces) {
-                if(Pieces[index]) {
-                    let piece = Pieces[index];
-                    piece.element.removeClass('available');
-                    
-                    if(piece.player == 1) {
-                        if(this.isValidPosition(piece, [piece.position[0]-1, piece.position[1]-1]) || this.isValidPosition(piece, [piece.position[0]+1, piece.position[1]-1])) {
-                            piece.canMove = true;
-                            piece.element.addClass("available");
-                            console.log(piece.element.attr('id')+' is available');
-                        }
-                    }
-                    else if(piece.player == 2) {
-                        if(this.isValidPosition(piece, [piece.position[0]-1, piece.position[1]+1]) || this.isValidPosition(piece, [piece.position[0]+1, piece.position[1]+1])) {
-                            piece.canMove = true;
-                            piece.element.addClass('available');
-                            console.log(piece.element.attr('id')+' is available');
-                        }
-                    }
-                    else {
-                        piece.canMove = false;
-                    }
-                }
+
+            var jumpPieces = returnJumpPieces();
+            var normalPieces = returnNormalPieces();
+
+            Pieces.forEach(function(piece) {
+                piece.element.removeClass('available');
+            });
+
+            if(jumpPieces.length > 0){
+                this.opponentJumpAvailable = true;
+                jumpPieces.forEach(function(piece){
+                    piece.element.addClass('available');
+                });
+                
+            }
+            else if(normalPieces.length > 0) {
+                this.opponentJumpAvailable = false;
+                normalPieces.forEach(function(piece) {
+                    piece.element.addClass('available');
+                })
             }
         },
 
         changeScore: function(){
             $('.values').html('Remaining pieces:<br>'+this.player1pieces+' white pieces<br>'+this.player2pieces+' red pieces');
+
+            if(this.player1pieces == 0) {
+                $('.game-status').html('RED HAS WON');
+            }
+            if(this.player2pieces == 0) {
+                $('.game-status').html('WHITE HAS WON');
+            }
         }
         
     }
@@ -221,6 +260,13 @@ window.onload = function() {
         //position on the board [x,y]
         this.position = position;
         this.player = '';
+
+         // not all pieces are allowed to move initially
+        this.canMove = false;
+
+        this.isDefeated = false;
+        
+
         // assigns a piece to the corresponding player by checking the id
         if(this.element.attr('id') < 13) {
             this.player = 1;
@@ -244,63 +290,139 @@ window.onload = function() {
             }
         };
 
-        // not all pieces are allowed to move initially
-        this.canMove = false;
+        this.remove = function() {
+            debugger;
+            Board.board[this.position[1]][this.position[0]] = 0;
+            this.element.css('display', 'none');
+            Board.changeScore();
+            this.isDefeated = true;
+            if(this.player == '1'){
+                Board.player1pieces--;
+                Board.score.player1++;
+            }
+            if(this.player == '2') {
+                Board.player2pieces--;
+                Board.score.player2++;
+            }
+            return;
+        };
+       
 
         this.cleanUpCode = function(pos){
             this.element.css('top', Board.location[this.position[1]]);
             this.element.css("left", Board.location[this.position[0]]);
-            this.element.removeClass("selected");
+            Board.changeScore();
             console.log("new position: x = "+pos[0]+", y = "+pos[1]);
-        }
+        };
         // move function for the selected piece
         // piece selection in at bottom of document
         this.move = function(pos) {
-            if(Board.isValidPosition(this, pos)) {
-                removeAvailable();
+            
+            if(Board.isValidNormalPosition(this, pos)) {
+                removeAvailableTiles();
                 Board.board[pos[1]][pos[0]] = Board.board[this.position[1]][this.position[0]];
                 Board.board[this.position[1]][this.position[0]] = 0;
                 this.position = pos;
-                this.cleanUpCode(pos);
+               
                 this.makeKing();
-                Board.whoCanMove();
+
+                this.cleanUpCode(pos);
+
+                this.element.removeClass("selected");
                 Board.changePlayer();
+                Board.whoCanMove();
+
                 // if(this.canJump){
                 //     this.jumpOverPiece();
                 // }
             }
-        }
+        };
 
-        this.canJump = function(pos){
-            var xDistance = pos[1]-this.position[1];
-            var yDistance = pos[0]-this.position[1];
-            var tileCheckx = this.position[1]+(xDistance/2);
-            var tileChecky = this.position[0]+(yDistance/2);
-            //out of board check
-            if(newPosition[0] > 7 || newPosition[1] > 7 || newPosition[0] < 0 || newPosition[1] < 0) return false;
+        this.jump = function(pos) {
+            debugger;
+            if(Board.isValidJumpPosition(this, pos)) {
+                removeAvailableTiles();
 
-            //king check and check the tiles
-            if(this.player == 1 && this.king == false) {
-                if(pos[0] < this.position[0]) {
-                    return false;
-                }
-            } else if (this.player == 2 && this.king == false) {
-                if(pos[0] > this.position[0]) {
-                    return false;
+                var dx = this.position[0]-pos[0];
+                var dy = this.position[1]-pos[1];
+                var killed = Pieces[Board.board[(dy/2)+pos[1]][(dx/2)+pos[0]]]
+
+                Board.board[pos[1]][pos[0]] = Board.board[this.position[1]][this.position[0]];
+                Board.board[this.position[1]][this.position[0]] = 0;
+                this.position = pos;
+
+                killed.remove();
+
+                this.makeKing();
+
+                if(this.canOpponentJump()) {
+                    Pieces.forEach(function(tile){ tile.element.removeClass("available") });
+                    this.element.addClass('available');
+                    addAvailableTiles();
+                    this.cleanUpCode();
+                } 
+                else {
+                    this.cleanUpCode(pos);
+                    this.element.removeClass("selected");
+                    Board.changePlayer();
+                    Board.whoCanMove();
                 }
             }
-
-
-            return false;
-        },
-
-        this.jumpOverPiece = function(){
-
-        },
-
-        this.canJumpOverAny = function(){
-
         }
+
+        //TODO checks for KINGU
+        this.canNormalJump = function(){
+            if(this.canOpponentJump()) { return false; }
+            else {
+                if(this.player == '1'){
+                    if(Board.isValidNormalPosition(this, [this.position[0]-1,this.position[1]-1]) || Board.isValidNormalPosition(this, [this.position[0]+1,this.position[1]-1])) {
+                        return true;
+                    }
+                    if(this.isKing) {
+                        if(Board.isValidNormalPosition(this,[this.position[0]-1,this.position[1]+1]) || Board.isValidNormalPosition(this,[this.position[0]+1,this.position[1]+1])) {
+                            return true;
+                        }
+                    }
+                }
+                if(this.player == '2'){
+                    if(Board.isValidNormalPosition(this, [this.position[0]-1,this.position[1]+1]) || Board.isValidNormalPosition(this, [this.position[0]+1,this.position[1]+1])) {
+                        return true;
+                    }
+                }
+                if(this.isKing) {
+                    if(Board.isValidNormalPosition(this,[this.position[0]-1,this.position[1]-1]) || Board.isValidNormalPosition(this,[this.position[0]+1,this.position[1]-1])) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+
+        //TODO checks for KING
+        this.canOpponentJump = function(){
+            if(this.player == '1') {
+                if(Board.isValidJumpPosition(this,[this.position[0]-2,this.position[1]-2]) || Board.isValidJumpPosition(this,[this.position[0]+2,this.position[1]-2])) {
+                    return true;
+                }
+                if(this.isKing) {
+                    if(Board.isValidJumpPosition(this,[this.position[0]-2,this.position[1]+2]) || Board.isValidJumpPosition(this,[this.position[0]+2,this.position[1]+2])) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            else if(this.player == '2') {
+                if(Board.isValidJumpPosition(this,[this.position[0]-2,this.position[1]+2]) || Board.isValidJumpPosition(this,[this.position[0]+2,this.position[1]+2])) {
+                    return true;
+                }
+                if(this.isKing) {
+                    if(Board.isValidJumpPosition(this,[this.position[0]-2,this.position[1]-2]) || Board.isValidJumpPosition(this,[this.position[0]+2,this.position[1]-2])) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
     }
 
     Board.init();
@@ -311,74 +433,114 @@ EVENTS
 */
 
     $('div.piece').on("click", function() {
-        console.log('test');
         //var tileHighlights = checkTiles();
         var player = Board.isPlayerTurn($(this));
-        
+         
         console.log("piece selected");  
-        if(player) {
+        if(player && $(this).hasClass('available')) {
             console.log("correct player");
             if($(this).hasClass("selected")) {
 
-                removeAvailable();
+                removeAvailableTiles();
 
                 $(this).removeClass("selected"); 
             }
             else {
-                removeAvailable();
+                removeAvailableTiles();
 
                 $(".piece").each(function() { $(this).removeClass("selected"); });
                 $(this).addClass("selected");
 
-                addAvailable();
+                addAvailableTiles();
             }
 
             
 
 
         } else { console.log("incorrect player... NO"); }
-    
-    $('.tile.available').on('click', function(){
-        //select the tile selected
-        var piece = Pieces[parseInt($('.piece.selected').attr('id'))];
-        console.log("attricute piece id "+$('.piece.selected').attr('id'))
-        var tile = Tiles[parseInt($(this).attr('id').replace('t',''))];
-
-
-        console.log("tile id "+$(this).attr('id'));
-        piece.move(tile.position);
-        });
     });
+    
+    $('.tile').on('click', function(){
+        if($(this).hasClass('available')) {
+            //select the tile selected
+            var piece = Pieces[parseInt($('.piece.selected').attr('id'))];
+            console.log("attricute piece id "+$('.piece.selected').attr('id'))
+            var tile = Tiles[parseInt($(this).attr('id').replace('t',''))];
 
-    function checkTiles() {
-        var availableTiles = [];
-        for(row in Board.board) {
-            for(column in Board.board[row]) {
-                if(Tiles[parseInt(parseInt(row*8) + parseInt(column))]) {
-                    var tileToCheck = Tiles[parseInt(parseInt(row*8) + parseInt(column))];
-                    var piece = Pieces[parseInt($('.piece.selected').attr('id'))];
-                    if(Board.isValidPosition(piece, tileToCheck.position)) {
-                        //tileToCheck.element.addClass('available');
-                        availableTiles.push(tileToCheck);
-                    }
-                }
+
+            console.log("tile id "+$(this).attr('id'));
+            if(!Board.opponentJumpAvailable) { piece.move(tile.position); }
+            else if(Board.opponentJumpAvailable) { piece.jump(tile.position); }
+            
+        }
+    });
+    
+
+
+
+    function removeAvailableTiles() {
+        Tiles.forEach(function(tile) {
+            tile.element.removeClass('available');
+        })
+    }
+
+    function addAvailableTiles() {
+        var jumpPieces = returnJumpPieces();
+        var normalPieces = returnNormalPieces();
+        if(jumpPieces.length > 0) {
+            var piece = Pieces[parseInt($('.piece.selected').attr('id'))];
+            var x = piece.position[0];
+            var y = piece.position[1];
+            var tile = undefined;
+        
+            if(Board.isValidJumpPosition(piece, [x-2,y-2])) {
+                tile = Tiles[parseInt(parseInt((y-2)*8) + parseInt(x-2))];
+                tile.element.addClass('available');
+            }
+            if(Board.isValidJumpPosition(piece, [x-2,y+2])) {
+                tile = Tiles[parseInt(parseInt((y+2)*8) + parseInt(x-2))];
+                tile.element.addClass('available');
+            }
+            if(Board.isValidJumpPosition(piece, [x+2,y-2])) {
+                tile = Tiles[parseInt(parseInt((y-2)*8) + parseInt(x+2))];
+                tile.element.addClass('available');
+            }
+            if(Board.isValidJumpPosition(piece, [x+2,y+2])) {
+                tile = Tiles[parseInt(parseInt((y+2)*8) + parseInt(x+2))];
+                tile.element.addClass('available');
+            }
+            
+        }
+        else {
+            var piece = Pieces[parseInt($('.piece.selected').attr('id'))];
+            var x = piece.position[0];
+            var y = piece.position[1];
+            var tile = undefined;
+        
+            if(Board.isValidNormalPosition(piece, [x-1,y-1])) {
+                tile = Tiles[parseInt(parseInt((y-1)*8) + parseInt(x-1))];
+                tile.element.addClass('available');
+            }
+            if(Board.isValidNormalPosition(piece, [x-1,y+1])) {
+                tile = Tiles[parseInt(parseInt((y+1)*8) + parseInt(x-1))];
+                tile.element.addClass('available');
+            }
+            if(Board.isValidNormalPosition(piece, [x+1,y-1])) {
+                tile = Tiles[parseInt(parseInt((y-1)*8) + parseInt(x+1))];
+                tile.element.addClass('available');
+            }
+            if(Board.isValidNormalPosition(piece, [x+1,y+1])) {
+                tile = Tiles[parseInt(parseInt((y+1)*8) + parseInt(x+1))];
+                tile.element.addClass('available');
             }
         }
-
-        return availableTiles;
     }
 
-    function removeAvailable() {
-        checkTiles().forEach(function(tile){
-            tile.element.removeClass('available');
-        });
-    }
-
-    function addAvailable() {
-        checkTiles().forEach(function(tile){
-            tile.element.addClass('available');
-        });
-    }
+    // function addAvailableTiles() {
+    //     checkTiles().forEach(function(tile){
+    //         tile.element.addClass('available');
+    //     });
+    // }
 
     function removePieceAvailability(playerTurn) {
         for(index in Pieces) {
@@ -388,6 +550,52 @@ EVENTS
                 if(parseInt(Pieces[index].element.attr("id")) < 13) { Pieces[index].element.removeClass('available'); }
             }
         }
+    }
+
+    // returns all pieces that can and are allowed to normal jump
+    function returnNormalPieces() {
+        var normalPieces = [];
+        Pieces.forEach(function(piece, index) {
+            if(Board.playerTurn == 1) {
+                if(index < 13) {
+                    if(piece.canNormalJump() && !piece.isDefeated) {
+                        normalPieces.push(piece);
+                    }
+                }
+            }
+            else if(Board.playerTurn == 2) {
+                if(index > 12) {
+                    if(piece.canNormalJump() && !piece.isDefeated) {
+                        normalPieces.push(piece);
+                    }
+                }
+            }
+        });
+
+        return normalPieces;
+    }
+
+    // returns all pieces that can and are allowed to opponent jump
+    function returnJumpPieces() {
+        var jumpPieces = [];
+        Pieces.forEach(function(piece, index) {
+            if(Board.playerTurn == 1) {
+                if(index < 13) {
+                    if(piece.canOpponentJump() && !piece.isDefeated) {
+                        jumpPieces.push(piece);
+                    }
+                }
+            }
+            else if(Board.playerTurn == 2) {
+                if(index > 12) {
+                    if(piece.canOpponentJump() && !piece.isDefeated) {
+                        jumpPieces.push(piece);
+                    }
+                }
+            }
+        });
+
+        return jumpPieces;
     }
 
 }

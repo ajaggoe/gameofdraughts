@@ -88,6 +88,11 @@ a {
   box-shadow: 0 0 10px 5px #20f868;
 }
 
+.piece.available {
+  box-shadow: 0 0 10px 5px #d0e22c;
+
+}
+
 .tile.available {
   box-shadow: 0 0 10px 5px #d0e22c;
 
