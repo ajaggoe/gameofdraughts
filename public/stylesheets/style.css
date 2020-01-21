@@ -5,9 +5,12 @@ h1 {
   text-align: center;
 }
 body {
+  background-image: url("../data/old-paper-bg3.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
   padding: 25px;
   font-family: GameofThrones;
-  background-image: url('../data/back.jpg');
+  background-color: wheat;
 }
 
 a {
@@ -117,8 +120,9 @@ a {
 
 
 .game-status {
-  position: absolute;
-  top: 150%;
+  position: relative;
+  top: 105%;
+  text-align: center;
 }
 
 .values {
