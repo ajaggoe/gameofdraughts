@@ -7,7 +7,7 @@ h1 {
 body {
   padding: 25px;
   font-family: GameofThrones;
-  background-color: wheat;
+  background-image: url('../data/back.jpg');
 }
 
 a {

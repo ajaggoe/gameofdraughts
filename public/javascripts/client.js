@@ -286,14 +286,14 @@ window.onload = function() {
                     if(this.position[1] == 0) {
                         this.isKing = true;
                         this.element.css('backgroundColor', 'lightgray');
-                        this.element.prepend('<img id="lannister-king-logo" src="data/lannister_king_logo.png">');
+                        this.element.prepend('<img id="lannister-king-logo" src="data/lannister.png">');
                     }
                 }
                 if(this.player == 2) {
                     if(this.position[1] == 7) {
                         this.isKing = true;
                         this.element.css('backgroundColor', 'pink');
-                        this.element.prepend('<img id="stark-king-logo" src="data/stark_king_logo.png">');
+                        this.element.prepend('<img id="stark-king-logo" src="data/stark.png">');
                     }
                 }
             }
@@ -607,4 +607,25 @@ EVENTS
     }
 
 }
+$(document).ready(function(){
+var socket = new WebSocket("ws://localhost:3000");
+socket.onmessage = function(event) {
+    let incomingMsg = event.data;
+    
+    if(incomingMsg.includes('HAS WON') || incomingMsg.includes('TIE')) {
+        alert(incomingMsg)
+        socket.close()
+    }
+    else {
+        let array = JSON.parse(incomingMsg)
+        renderField(array)
+    }
+}
+
+socket.onclose = function() {
+    alert('game was closed')
+}
+
+
+});
 
