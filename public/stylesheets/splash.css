@@ -1,0 +1,151 @@
+@font-face { font-family: GameofThrones; src: url('../fonts/game-of-thrones/GameofThrones.TTF'); } 
+
+h1 {
+  font-family: GameofThrones;
+  text-align: center;
+}
+body {
+  background-image: url("../data/old-paper-bg3.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  font-family: GameofThrones;
+  background-color: wheat;
+  width: 96%;
+  height: 96%;
+}
+
+a {
+  color: black;
+}
+
+main {
+    width: 100%;
+    height: 100%;
+}
+    
+
+.sidebar1 {
+  position: relative;
+  float: left;
+  top: 10%;
+  width: 25%;
+  height: 90%;
+  min-height: 90%;
+}
+
+
+
+.middle {
+  position: relative;
+  left: 25%;
+  top: 10%;
+  width: 50%;
+  height: 90%;
+  min-height: 90%;
+}
+
+.sidebar2 {
+  position: relative;
+  float: right;
+  top: 10%;
+  width: 25%;
+  height: 90%;
+  min-height: 90%;
+}
+
+.titlebar {
+  position: relative;
+  width: 100%;
+  height: 10%;
+  min-height: 10%;
+}
+
+.status-wrapper {
+    position: relative;
+    top: 490px;
+    margin: auto;
+    min-height: 10%;
+    width: 100%
+}
+
+.game-status {
+  position: absolute;
+  text-align: center;
+  width: 100%;
+}
+
+.info-wrapper {
+    position: relative;
+    top: 50px;
+    margin: auto;
+    min-height: 10%;
+    width: 100%
+}
+
+.info {
+    position: absolute;
+    font-size: 30px;
+    text-align: center;
+    width: 100%;
+}   
+
+.play-button {
+    font-size: 60px;
+    position: absolute;
+    top: 250px;
+    text-align: center;
+    background-color: crimson;
+    border: solid;
+    border-width: 2px;
+    width: 60%;
+    height: auto;
+    margin-left: 19%;
+    margin-right: 19%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.play-button:hover {
+    background-color: pink;
+}
+
+.wrapper1, .wrapper2 {
+  background-color: aliceblue;
+  border: solid;
+  border-width: 5px;
+  border-color: gray;
+  position: relative;
+  left: 10%;
+  width: 60%;
+  padding-top: 60%;
+}
+
+.wrapper2 {
+  left: 25%;
+}
+
+.stark, .lannister {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: auto;
+}
+
+#text-s {
+  position: absolute;
+  left: 10%;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  color: crimson;  
+}
+
+#text-l {
+  position: absolute;
+  right: 10%;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  color: gold;
+}
+
+.center {
+  text-align: center;
+}
