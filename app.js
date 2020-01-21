@@ -6,10 +6,11 @@ var path = require('path');
 var port = process.argv[2];
 var app = express();
 
+var players = 0;
 
 var indexRouter = require('./routes/index');
 var Game = require('./game')
-var messages = require('./public/javascripts/messages')
+//var messages = require('./public/javascripts/messages')
 var server = http.createServer(app);
 
 
@@ -22,12 +23,13 @@ app.get("/game", indexRouter);
 
 app.get("/", function(req, res){
   res.sendFile("game.html", {root: "./public"});
+  res.sendFile("style.css", {root: "./public/stylesheets"})
 });
 
 // app.get("/", (req, res) => {
 //   res.render("splash.ejs", {
-//     gamesCompleted: gameStatus.gamesCompleted,
-//     recentTime: gameStatus.recentTime,
+//     gamesCompletedRed: gameStatus.gamesCompleted,
+//     gamesCompletedWhite: gameStatus.recentTime,
 //     onlinePlayers: players
 //   });
 // });
@@ -56,11 +58,11 @@ wss.on('connection', function connection(ws) {
   let con = ws;
   let conID = connectionID++;
   let playerType = currentGame.addPlayer(con);
-  websockets[conId] = currentGame;
+  websockets[conID] = currentGame;
 
   console.log(
     "Player %s placed in game %s as %s",
-    conid,
+    conID,
     currentGame.id,
     playerType
   );
@@ -71,10 +73,39 @@ wss.on('connection', function connection(ws) {
 
   con.on("message", function incoming(message) {
     let msg = JSON.parse(message);
-    let gameObj = websockets[conid];
-    let isRed = gameObj.red == con ? true : false;
-    let isYellow = gameObj.yellow == con ? true : false;
+    let gameObj = websockets[conID  ];
+    let isPlayer1 = gameObj.player1 == con ? true : false;
+    let isPlayer2 = gameObj.player2 == con ? true : false;
 
+    if(gameObj.hasTwoConnectedPlayers()) {
+      gameObj.playerturn = 1;
+      if(isPlayer1 && gameObj.playerturn == 1) {
+        gameObj.addToColumn(oMsg)
+        let field = gameObj.gameBoard;
+        console.log(field);
+        gameObj.player1.send(JSON.stringify(field))
+        gameObj.player2.send(JSON.stringify(field))
+      }
+
+      if(isPlayer2 && gameObj.playerturn == 2) {
+        gameObj.addToColumn(oMsg)
+        let field = gameObj.gameBoard;
+        console.log(field);
+        gameObj.player1.send(JSON.stringify(field))
+        gameObj.player2.send(JSON.stringify(field))
+      }
+
+      if(gameObj.hasEnded()) {
+        gameStatus.gamesCompleted++
+        gameObj.player1.send(gameObj.gameState)
+        gameObj.player2.send(gameObj.gameState)
+      }
+    }
+    else{
+      gameObj.playerturn = 0;
+      gameObj.player1.send(JSON.stringify(field))
+      gameObj.player2.send(JSON.stringify(field))
+    }
     
   }) 
 
@@ -83,10 +114,36 @@ wss.on('connection', function connection(ws) {
      * code 1001 means almost always closing initiated by the client;
      * source: https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
      */
-    console.log(conid + " disconnected ...");
-    players--;
+    console.log(con.id + " disconnected ...");
 
+    if (code == "1001") {
+      /*
+       * if possible, abort the game; if not, the game is already completed
+       */
+      let gameObj = websockets[con.id];
 
+      if (gameObj.isValidTransition(gameObj.gameState, "ABORTED")) {
+        gameObj.setStatus("ABORTED");
+
+        /*
+         * determine whose connection remains open;
+         * close it
+         */
+        try {
+          gameObj.playerA.close();
+          gameObj.playerA = null;
+        } catch (e) {
+          console.log("Player A closing: " + e);
+        }
+
+        try {
+          gameObj.playerB.close();
+          gameObj.playerB = null;
+        } catch (e) {
+          console.log("Player B closing: " + e);
+        }
+      }
+    }
   });
 
 });
