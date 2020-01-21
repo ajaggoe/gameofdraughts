@@ -16,19 +16,21 @@ window.onload = function() {
     var Pieces = [];
     //used to save all tile instances
     var Tiles = [];
-
+    var message;
+    
     var Board = {
         board: gameBoard,
         score: {player1: 0, player2: 0},
         player1pieces: 12,
         player2pieces: 12,
+        hasStarted: false,
         playerTurn: 1,
+        player: 1,
         opponentJumpAvailable: false,
         tiles: $('div.tiles'),
         location: ['0px','64px','128px','192px','256px','320px','384px','448px'],
         
-        init: function (){
-            this.changeScore();
+        render: function (){
         //    new Audio("../data/NyanCatoriginal.wav").play()
             for(row in this.board) {
                 for(column in this.board[row]) {
@@ -94,27 +96,30 @@ window.onload = function() {
             }
 
             this.whoCanMove();
-            removePieceAvailability(this.playerTurn);
         },
 
 
         // changes the players turn, and sets the game-status text
         changePlayer: function() {
             if(this.playerTurn == 1) {
-                // $('.game-status').html('Red\'s turn!');
-                // this.playerTurn = 2;
-                // console.log('changu puleyaru');
-                // removePieceAvailability(this.playerTurn);
-                // return;
+                $('.game-status').html('Red\'s turn!');
+                this.playerTurn = 2;
+                console.log('changu puleyaru');
+                Pieces.forEach(function(piece) {
+				    piece.element.removeClass('available');
+				});
+                return;
                 $('.game-status').html('Red\'s turn!');
                 
             }
             if(this.playerTurn == 2) {
-                // $('.game-status').html('White\'s turn!');
-                // this.playerTurn = 1;
-                // console.log('changu puleyaru');
-                // removePieceAvailability(this.playerTurn);
-                // return;
+                $('.game-status').html('White\'s turn!');
+                this.playerTurn = 1;
+                console.log('changu puleyaru');
+                Pieces.forEach(function(piece) {
+				    piece.element.removeClass('available');
+				});
+                return;
                 $('.game-status').html('White\'s turn!');
 
             }
@@ -122,130 +127,124 @@ window.onload = function() {
         
         // checks if the selected piece is of the player in turn
         isPlayerTurn: function(element) {
-            // if(element.parent().attr("class") == "redpiece" && this.playerTurn == 2) return true;
-            // if(element.parent().attr("class") == "whitepiece" && this.playerTurn == 1) return true;
-            // return false;
+            if(element.parent().attr("class") == "redpiece" && this.playerTurn == 2 && this.player == this.playerTurn) return true;
+            if(element.parent().attr("class") == "whitepiece" && this.playerTurn == 1 && this.player == this.playerTurn) return true;
+            return false;
         },
 
         //piece = the piece to mremvove; position = position to move to
         isValidNormalPosition: function(piece, position) {
-                         // if(position[0] > -1 && position[0] < 8 && position[1] > -1 && position[1] < 8) {
-            //     if(this.board[position[1]][position[0]] == 0){ 
-            //         var piece = piece;
+            if(position[0] > -1 && position[0] < 8 && position[1] > -1 && position[1] < 8) {
+                if(this.board[position[1]][position[0]] == 0){ 
+                    var piece = piece;
                     
-            //         if(piece) {
+                    if(piece) {
                         
-            //             if(piece.position[0]-position[0] === 1 || piece.position[0]-position[0] === -1) {
-            //                     // console.log("PLACE");
-            //                     // console.log(piece.position[1]-position[1]);
-            //                 if(piece.player == '1' && piece.position[1]-position[1] == 1) {
+                        if(piece.position[0]-position[0] === 1 || piece.position[0]-position[0] === -1) {
+                                // console.log("PLACE");
+                                // console.log(piece.position[1]-position[1]);
+                            if(piece.player == '1' && piece.position[1]-position[1] == 1) {
 
-            //                     return true;
-            //                 }
-            //                 if(piece.player == '2' && piece.position[1]-position[1] == -1) {
-            //                     return true;
-            //                 }
-            //                 if(piece.isKing) {
-            //                     if(piece.player == '1' && piece.position[1]-position[1] == -1){
-            //                         return true;
-            //                     }
-            //                     if(piece.player == '2' && piece.position[1]-position[1] == 1) {
-            //                         return true;
-            //                     }
-            //                 }
-            //             }
-            //         }
-            //     }
-            //     else return false;
-            // }
+                                return true;
+                            }
+                            if(piece.player == '2' && piece.position[1]-position[1] == -1) {
+                                return true;
+                            }
+                            if(piece.isKing) {
+                                if(piece.player == '1' && piece.position[1]-position[1] == -1){
+                                    return true;
+                                }
+                                if(piece.player == '2' && piece.position[1]-position[1] == 1) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+                else return false;
+            }
         },
 
         isValidJumpPosition: function(piece, position) {
-            // if(position[0] > -1 && position[0] < 8 && position[1] > -1 && position[1] < 8) {
-            //     var dx = piece.position[0]-position[0];
-            //     var dy = piece.position[1]-position[1];
-            //     var x = piece.position[0];
-            //     var y = piece.position[1]
+            if(position[0] > -1 && position[0] < 8 && position[1] > -1 && position[1] < 8) {
+                var dx = piece.position[0]-position[0];
+                var dy = piece.position[1]-position[1];
+                var x = piece.position[0];
+                var y = piece.position[1]
 
-            //     if(this.board[position[1]][position[0]] == 0) {
-            //         if(piece) {
+                if(this.board[position[1]][position[0]] == 0) {
+                    if(piece) {
                         
-            //             if(dy == 2 && piece.player == '1') { 
-            //                 if(dx == 2 || dx == -2) {
-            //                     if(this.board[dy/2 + position[1]][dx/2 + position[0]] > 12) {
-            //                         return true
-            //                     }
-            //                 }
-            //             } 
-            //             if(dy == -2 && piece.player == '2') {
+                        if(dy == 2 && piece.player == '1') { 
+                            if(dx == 2 || dx == -2) {
+                                if(this.board[dy/2 + position[1]][dx/2 + position[0]] > 12) {
+                                    return true
+                                }
+                            }
+                        } 
+                        if(dy == -2 && piece.player == '2') {
                            
-            //                 if(dx == 2 || dx == -2) {
-            //                     if(this.board[dy/2 + position[1]][dx/2 + position[0]] < 13 && this.board[dy/2 + position[1]][dx/2 + position[0]] > 0) {
-            //                         return true
-            //                     }
-            //                 }
+                            if(dx == 2 || dx == -2) {
+                                if(this.board[dy/2 + position[1]][dx/2 + position[0]] < 13 && this.board[dy/2 + position[1]][dx/2 + position[0]] > 0) {
+                                    return true
+                                }
+                            }
 
-            //             }
-            //             if((dy == -2 || dy == 2) && piece.isKing) {
-            //                 if(dx == 2 || dx == -2) {
+                        }
+                        if((dy == -2 || dy == 2) && piece.isKing) {
+                            if(dx == 2 || dx == -2) {
                                
-            //                     if(piece.player == '1' && this.board[dy/2 + position[1]][dx/2 + position[0]] > 12) {
-            //                         return true;
-            //                     }
-            //                     if(piece.player == '2' && this.board[dy/2 + position[1]][dx/2 + position[0]] < 13 && this.board[dy/2 + position[1]][dx/2 + position[0]] > 0) {
-            //                         return true;
-            //                     }
-            //                 }
+                                if(piece.player == '1' && this.board[dy/2 + position[1]][dx/2 + position[0]] > 12) {
+                                    return true;
+                                }
+                                if(piece.player == '2' && this.board[dy/2 + position[1]][dx/2 + position[0]] < 13 && this.board[dy/2 + position[1]][dx/2 + position[0]] > 0) {
+                                    return true;
+                                }
+                            }
                            
-            //             }
-            //         }
-            //     }
-            // }
-            // return false;
+                        }
+                    }
+                }
+            }
+            return false;
         },
 
         // loops through all pieces and checks who can move and sets the canMove attr to true;
         // and adds the class "available" to that piece
         whoCanMove: function() {
 
-            // var jumpPieces = returnJumpPieces();
-            // var normalPieces = returnNormalPieces();
+            var jumpPieces = returnJumpPieces();
+            var normalPieces = returnNormalPieces();
 
-            // Pieces.forEach(function(piece) {
-            //     piece.element.removeClass('available');
-            // });
+            Pieces.forEach(function(piece) {
+                if(piece != undefined) {
+                    piece.element.removeClass('available');
+                }
+            });
 
-            // if(jumpPieces.length > 0){
-            //     this.opponentJumpAvailable = true;
-            //     jumpPieces.forEach(function(piece){
-            //         piece.element.addClass('available');
-            //     });
+            if(jumpPieces.length > 0){
+                this.opponentJumpAvailable = true;
+                jumpPieces.forEach(function(piece){
+                    piece.element.addClass('available');
+                });
                 
-            // }
-            // else if(normalPieces.length > 0) {
-            //     this.opponentJumpAvailable = false;
-            //     normalPieces.forEach(function(piece) {
-            //         piece.element.addClass('available');
-            //     })
-            // }
-            // else {
-            //     this.changePlayer();
-            //     this.whoCanMove();
-            // }
+            }
+            else if(normalPieces.length > 0) {
+                this.opponentJumpAvailable = false;
+                normalPieces.forEach(function(piece) {
+                    piece.element.addClass('available');
+                })
+            }
+            else {
+                this.changePlayer();
+                this.whoCanMove();
+            }
         },
 
         changeScore: function(){
-            // $('.red-captured .center').html(parseInt(12-this.player2pieces));
-            // $('.white-captured .center').html(parseInt(12-this.player1pieces));
+            $('.red-captured .center').html(parseInt(12-this.player2pieces));
+            $('.white-captured .center').html(parseInt(12-this.player1pieces));
 
-            // if(this.player1pieces == 0) {
-            //     $('.game-status').html('RED HAS WON');
-            //     alert("HOUSE STARK HAS WON");
-            // }
-            // if(this.player2pieces == 0) {
-            //     $('.game-status').html('WHITE HAS WON');
-            //     alert("HOUSE LANNISTER HAS WON");
-            // }
         }
         
     }
@@ -339,15 +338,13 @@ window.onload = function() {
                 this.element.removeClass("selected");
                 Board.changePlayer();
                 Board.whoCanMove();
+                message = '{"type": "move", "piece":'+this.element.attr("id")+', "x":'+pos[0]+', "y":'+pos[1]+', "playerturn": "'+Board.playerTurn+'"}';
+                socket.open(message);
 
-                // if(this.canJump){
-                //     this.jumpOverPiece();
-                // }
             }
         };
 
         this.jump = function(pos) {
-            debugger;
             if(Board.isValidJumpPosition(this, pos)) {
                 removeAvailableTiles();
 
@@ -364,16 +361,18 @@ window.onload = function() {
                 this.makeKing();
 
                 if(this.canOpponentJump()) {
-                    Pieces.forEach(function(tile){ tile.element.removeClass("available") });
+                    Pieces.forEach(function(tile){ if(tile != undefined) { tile.element.removeClass("available") } });
                     this.element.addClass('available');
                     addAvailableTiles();
                     this.cleanUpCode();
+                    message = '{"type": "jump", "piece":'+this.element.attr("id")+', "x":'+pos[0]+', "y":'+pos[1]+', "playerturn": "'+Board.playerTurn+'"}';
                 } 
                 else {
                     this.cleanUpCode(pos);
                     this.element.removeClass("selected");
                     Board.changePlayer();
                     Board.whoCanMove();
+                    message = '{"type": "jump", "piece":'+this.element.attr("id")+', "x":'+pos[0]+', "y":'+pos[1]+', "playerturn": "'+Board.playerTurn+'"}';
                 }
             }
         }
@@ -433,7 +432,7 @@ window.onload = function() {
         };
     }
 
-    Board.init();
+    Board.render();
 
 
 /* 
@@ -441,7 +440,7 @@ EVENTS
 */
 
     $('div.piece').on("click", function() {
-        //var tileHighlights = checkTiles();
+        // returns true if it is the players turn
         var player = Board.isPlayerTurn($(this));
          
         console.log("piece selected");  
@@ -483,8 +482,6 @@ EVENTS
         }
     });
     
-
-
 
     function removeAvailableTiles() {
         Tiles.forEach(function(tile) {
@@ -544,37 +541,23 @@ EVENTS
         }
     }
 
-    // function addAvailableTiles() {
-    //     checkTiles().forEach(function(tile){
-    //         tile.element.addClass('available');
-    //     });
-    // }
-
-    function removePieceAvailability(playerTurn) {
-        for(index in Pieces) {
-            if(Pieces[index] && playerTurn == 1) {
-                if(parseInt(Pieces[index].element.attr("id")) > 12) { Pieces[index].element.removeClass('available'); }
-            }else if(Pieces[index] && playerTurn == 2) {
-                if(parseInt(Pieces[index].element.attr("id")) < 13) { Pieces[index].element.removeClass('available'); }
-            }
-        }
-    }
-
     // returns all pieces that can and are allowed to normal jump
     function returnNormalPieces() {
         var normalPieces = [];
         Pieces.forEach(function(piece, index) {
-            if(Board.playerTurn == 1) {
-                if(index < 13) {
-                    if(piece.canNormalJump() && !piece.isDefeated) {
-                        normalPieces.push(piece);
+            if(Pieces[index] != undefined) {
+                if(Board.playerTurn == 1 && Board.player == Board.playerTurn) {
+                    if(index < 13) {
+                        if(piece.canNormalJump() && !piece.isDefeated) {
+                            normalPieces.push(piece);
+                        }
                     }
                 }
-            }
-            else if(Board.playerTurn == 2) {
-                if(index > 12) {
-                    if(piece.canNormalJump() && !piece.isDefeated) {
-                        normalPieces.push(piece);
+                else if(Board.playerTurn == 2 && Board.player == Board.playerTurn) {
+                    if(index > 12) {
+                        if(piece.canNormalJump() && !piece.isDefeated) {
+                            normalPieces.push(piece);
+                        }
                     }
                 }
             }
@@ -587,17 +570,19 @@ EVENTS
     function returnJumpPieces() {
         var jumpPieces = [];
         Pieces.forEach(function(piece, index) {
-            if(Board.playerTurn == 1) {
-                if(index < 13) {
-                    if(piece.canOpponentJump() && !piece.isDefeated) {
-                        jumpPieces.push(piece);
+            if(Pieces[index] != undefined) {
+                if(Board.playerTurn == 1 && Board.player == Board.playerTurn) {
+                    if(index < 13) {
+                        if(piece.canOpponentJump() && !piece.isDefeated) {
+                            jumpPieces.push(piece);
+                        }
                     }
                 }
-            }
-            else if(Board.playerTurn == 2) {
-                if(index > 12) {
-                    if(piece.canOpponentJump() && !piece.isDefeated) {
-                        jumpPieces.push(piece);
+                else if(Board.playerTurn == 2 && Board.player == Board.playerTurn) {
+                    if(index > 12) {
+                        if(piece.canOpponentJump() && !piece.isDefeated) {
+                            jumpPieces.push(piece);
+                        }
                     }
                 }
             }
@@ -609,22 +594,48 @@ EVENTS
 }
 $(document).ready(function(){
     if($(window).width() < 1040){
-        alert("YOUR WINDOW IS BELOW THE MINIMUM SIZE...\nPLEASE RESIZE YOUR WINDOW")
+        alert("YOUR WINDOW IS BELOW THE MINIMUM SIZE...\nPLEASE RESIZE YOUR WINDOW");
     }
     
     var socket = new WebSocket("ws://localhost:3000");
     socket.onmessage = function(event) {
         let incomingMsg = event.data;
         
-        if(incomingMsg.includes('HAS WON')) {
-            alert(incomingMsg)
-            socket.close()
+
+        if(incomingMsg.type == 'winner') {
+            if(incomingMsg.winner == Board.player) { alert('YOU HAVE WON!') }
+            if(incomingMsg.winner == 1 && incomingMsg.winner != Board.player) { alert('HOUSE LANNISTER IS THE WINNER!') }
+            if(incomingMsg.winner == 2 && incomingMsg.winner != Board.player) { alert('HOUSE STARK IS THE WINNER!')}
+
+            Board.playerTurn = incomingMsg.playerturn;
+
+            socket.close();
         }
-        else {
-            let array = JSON.parse(incomingMsg)
-            renderField(array)
+        if(incomingMsg.type == 'isplayer') {
+            var player = incomingMsg.player;
+            Board.player = player;
+
+            Board.playerTurn = incomingMsg.playerturn;
+
+            if(player == 2) { alert('YOU REPRESENT HOUSE OF STARK \naka RED'); }
+            if(player == 1) { alert('YOU REPRESENT HOUSE OF LANNISTER \naka WHITE'); }
+        }
+        if(incomingMsg.type == 'move') {
+            Board.playerTurn = incomingMsg.playerturn;
+            var piece = Pieces[parseInt(incomingMsg.piece)];
+            piece.move([incomingMsg.x,incomingMsg.y]);
+        }
+        if(incomingMsg.type == 'jump') {
+            Board.playerTurn = incomingMsg.playerturn;
+            var piece = Pieces[parseInt(incomingMsg.piece)];
+            piece.jump([incomingMsg.x,incomingMsg.y]);
         }
     }
+
+    socket.on('open', function(open){
+        var msg = JSON.parse(open);
+        socket.send(msg);
+    })
 
     // socket.onclose = function() {
     //     alert('game was closed')
@@ -634,7 +645,7 @@ $(document).ready(function(){
 });
 $(window).resize(function(){
     if($(window).width() < 1040){
-        alert("YOUR WINDOW IS BELOW THE MINIMUM SIZE...\nPLEASE RESIZE YOUR WINDOW")
+        alert("YOUR WINDOW IS BELOW THE MINIMUM SIZE...\nPLEASE RESIZE YOUR WINDOW");
     }
 })
 
