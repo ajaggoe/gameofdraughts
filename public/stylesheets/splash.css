@@ -22,6 +22,17 @@ main {
     width: 100%;
     height: 100%;
 }
+
+#rules {
+    color: darkblue;
+    text-decoration: underline;
+}
+#rules:hover {
+    color: lightblue;
+}
+#rules:active{
+    color: white;
+}
     
 
 .sidebar1 {
