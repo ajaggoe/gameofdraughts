@@ -71,9 +71,10 @@ wss.on('connection', function connection(ws) {
     currentGame = new Game(gameStatus.gamesInitialized++);
   }
 
+  
   con.on("message", function incoming(message) {
     let msg = JSON.parse(message);
-    let gameObj = websockets[conID  ];
+    let gameObj = websockets[conID];
     let isPlayer1 = gameObj.player1 == con ? true : false;
     let isPlayer2 = gameObj.player2 == con ? true : false;
 
@@ -96,16 +97,17 @@ wss.on('connection', function connection(ws) {
       }
 
       if(gameObj.hasEnded()) {
-        gameStatus.gamesCompleted++
+        if(gameObj.player1pieces == 0) {
+          gameStatus.gamesCompletedRed++;
+        }
+        if(gameObj.player2pieces == 0){
+          gameStatus.gamesCompletedWhite++;
+        }
         gameObj.player1.send(gameObj.gameState)
         gameObj.player2.send(gameObj.gameState)
       }
     }
-    else{
-      gameObj.playerturn = 0;
-      gameObj.player1.send(JSON.stringify(field))
-      gameObj.player2.send(JSON.stringify(field))
-    }
+
     
   }) 
 

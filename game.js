@@ -1,7 +1,7 @@
 /* every game has two players, identified by their WebSocket */
 var game = function(gameID) {
-    this.playerA = null;
-    this.playerB = null;
+    this.player1 = null;
+    this.player2 = null;
     this.id = gameID;
     this.redpieces = null; //first player to join the game, can set the word
     this.whitepieces = null; //first player to join the game, can set the word
@@ -14,7 +14,7 @@ var game = function(gameID) {
     this.Tiles = [];
 
 
-    this.gameState = "0 JOINT"; //"A" means A won, "B" means B won, "ABORTED" means the game was aborted
+    this.gameState = "0 JOINED"; //"A" means A won, "B" means B won, "ABORTED" means the game was aborted
     this.gameBoard = [  [-1    ,21   ,-1    ,22     ,-1     ,23     ,-1     ,24],
                         [17    ,-1   ,18    ,-1     ,19     ,-1     ,20     ,-1],
                         [-1    ,13   ,-1    ,14     ,-1     ,15     ,-1     ,16],
