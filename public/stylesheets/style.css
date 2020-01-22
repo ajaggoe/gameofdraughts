@@ -118,7 +118,19 @@ a {
   box-shadow: 0 0 10px 5px #20f868;;
 }
 
+.leave{
+  position: absolute;
+  left: 10%;
+  top: 300px;
+  display: none;
+  border: solid 3px lightyellow;
+  background-color: goldenrod;
+  padding: 5px;
+}
 
+.leave a{
+  color: black;
+}
 .game-status {
 
   position: relative;

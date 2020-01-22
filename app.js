@@ -15,24 +15,26 @@ var server = http.createServer(app);
 
 
 var gameStatus = require("./stattrack")
-
+app.set("view engine", "ejs")
 app.use(express.static(__dirname + "/public"));
 
 
-app.get("/game", indexRouter);
-
-app.get("/", function(req, res){
-  res.sendFile("game.html", {root: "./public"});
-  res.sendFile("style.css", {root: "./public/stylesheets"})
+app.get("/play", indexRouter);
+app.get("/splash", (req, res) => {
+  res.render("splash.ejs", {
+    stark: gameStatus.gamesCompletedRed,
+    lannister: gameStatus.gamesCompletedWhite,
+    ongoingGames: gameStatus.gamesInitialized-1
+  });
 });
 
-// app.get("/", (req, res) => {
-//   res.render("splash.ejs", {
-//     gamesCompletedRed: gameStatus.gamesCompleted,
-//     gamesCompletedWhite: gameStatus.recentTime,
-//     onlinePlayers: players
-//   });
-// });
+app.get("/", (req, res) => {
+  res.render("splash.ejs", {
+    stark: gameStatus.gamesCompletedRed,
+    lannister: gameStatus.gamesCompletedWhite,
+    ongoingGames: gameStatus.gamesInitialized-1
+  });
+});
 
 const wss = new websocket.Server({ server }); 
 var websockets = {};
@@ -56,56 +58,63 @@ wss.on('connection', function connection(ws) {
 
   players++
   let con = ws;
-  let conID = connectionID++;
+  con.id = connectionID++;
   let playerType = currentGame.addPlayer(con);
-  websockets[conID] = currentGame;
+  websockets[con.id] = currentGame;
 
+  var i;
+  let player1 = {};
   console.log(
     "Player %s placed in game %s as %s",
-    conID,
+    con.id,
     currentGame.id,
     playerType
   );
 
+  con.send(playerType == "1" ? '{"type": "isplayer", "player": 1}' : '{"type": "isplayer", "player": 2}');
+
   if (currentGame.hasTwoConnectedPlayers()) {
     currentGame = new Game(gameStatus.gamesInitialized++);
+    websockets[con.id].player1.send('{"type": "start"}');
+    websockets[con.id].player2.send('{"type": "start"}');
+
   }
 
-  
+  // if (!player1[i]) {
+  //   var obj = websockets[con.id]
+  //   con.send('{"type": "player", "player": 1}')
+  //   player1[i] = 1;
+  // } else {
+  //   con.send(JSON.parse('{"player": 2}'))
+  //   i++
+  // }
+
   con.on("message", function incoming(message) {
     let msg = JSON.parse(message);
-    let gameObj = websockets[conID];
+    let gameObj = websockets[con.id];
     let isPlayer1 = gameObj.player1 == con ? true : false;
     let isPlayer2 = gameObj.player2 == con ? true : false;
 
+
     if(gameObj.hasTwoConnectedPlayers()) {
-      gameObj.playerturn = 1;
-      if(isPlayer1 && gameObj.playerturn == 1) {
-        gameObj.addToColumn(oMsg)
-        let field = gameObj.gameBoard;
-        console.log(field);
-        gameObj.player1.send(JSON.stringify(field))
-        gameObj.player2.send(JSON.stringify(field))
+      if(isPlayer1) {
+        // gameObj.player1.send(JSON.stringify(msg))
+        gameObj.player2.send(JSON.stringify(msg))
+        console.log(JSON.stringify(msg))
       }
 
-      if(isPlayer2 && gameObj.playerturn == 2) {
-        gameObj.addToColumn(oMsg)
-        let field = gameObj.gameBoard;
-        console.log(field);
-        gameObj.player1.send(JSON.stringify(field))
-        gameObj.player2.send(JSON.stringify(field))
+      if(isPlayer2) {
+        gameObj.player1.send(JSON.stringify(msg))
+        console.log(JSON.stringify(msg))
+        // gameObj.player2.send(JSON.stringify(msg))
       }
 
-      if(gameObj.hasEnded()) {
-        if(gameObj.player1pieces == 0) {
-          gameStatus.gamesCompletedRed++;
-        }
-        if(gameObj.player2pieces == 0){
-          gameStatus.gamesCompletedWhite++;
-        }
-        gameObj.player1.send(gameObj.gameState)
-        gameObj.player2.send(gameObj.gameState)
-      }
+     
+    }
+
+    if(msg.type == "winner") {
+      if(msg.winner == '1') { gameStatus.gamesCompletedRed++; };
+      if(msg.winner == '2') { gameStatus.gamesCompletedWhite++; };
     }
 
     
@@ -124,26 +133,24 @@ wss.on('connection', function connection(ws) {
        */
       let gameObj = websockets[con.id];
 
-      if (gameObj.isValidTransition(gameObj.gameState, "ABORTED")) {
-        gameObj.setStatus("ABORTED");
+      gameObj.setStatus("ABORTED");
 
-        /*
-         * determine whose connection remains open;
-         * close it
-         */
-        try {
-          gameObj.playerA.close();
-          gameObj.playerA = null;
-        } catch (e) {
-          console.log("Player A closing: " + e);
-        }
+      /*
+        * determine whose connection remains open;
+        * close it
+        */
+      try {
+        gameObj.player1.close();
+        gameObj.player1 = null;
+      } catch (e) {
+        console.log("Stark closing: " + e);
+      }
 
-        try {
-          gameObj.playerB.close();
-          gameObj.playerB = null;
-        } catch (e) {
-          console.log("Player B closing: " + e);
-        }
+      try {
+        gameObj.player2.close();
+        gameObj.player2 = null;
+      } catch (e) {
+        console.log("Lannister closing: " + e);
       }
     }
   });

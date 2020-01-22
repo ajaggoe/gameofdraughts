@@ -56,8 +56,8 @@ main {
 }
 
 .sidebar2 {
-  position: relative;
-  float: right;
+  position: absolute;
+  right: 0px;
   top: 10%;
   width: 25%;
   height: 90%;
@@ -72,7 +72,7 @@ main {
 }
 
 .status-wrapper {
-    position: relative;
+    position: absolute;
     top: 490px;
     margin: auto;
     min-height: 10%;
@@ -102,7 +102,7 @@ main {
 
 .play-button {
     font-size: 60px;
-    position: absolute;
+    position: relative;
     top: 250px;
     text-align: center;
     background-color: darkred;
@@ -114,7 +114,7 @@ main {
     margin-right: 19%;
     padding-top: 10px;
     padding-bottom: 10px;
-    transition: margin-left 0.5s, top 0.5s, padding-left 0.5s, padding-right 0.5s, padding-top 0.5s, padding-bottom 0.5s, background-color 0.5s;
+    transition: margin-left 0.2s, top 0.2s, padding-left 0.2s, padding-right 0.2s, padding-top 0.2s, padding-bottom 0.2s, background-color 0.2s;
 }
 
 .play-button:hover {
@@ -125,6 +125,20 @@ main {
     padding-right: 10px;
     padding-top: 20px;
     padding-bottom: 20px;
+}
+
+.button {
+  font-size: 60px;
+  position: absolute;
+  left:0px;
+  top:0px;
+  text-align: center;
+  background-color: darkred;
+  
+  width: 100%;
+  height: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .wrapper1, .wrapper2 {
