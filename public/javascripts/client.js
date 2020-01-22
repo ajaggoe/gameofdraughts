@@ -250,6 +250,7 @@
            }
         },
 
+
         changeScore: function(){
     
             $('.red-captured .center').html(parseInt(12-this.player2pieces));
@@ -260,12 +261,20 @@
                 // alert("HOUSE STARK HAS WON");
                 message = '{"type": "winner", "winner": '+2+'}';
                 socket.send(message)
+                alert("WINNER WINNER CHICKEN DINNER!")
+                $('.leave').css('display', 'inline-block');
+
+                
             }
             if(this.player2pieces == 0) {
                 // $('.game-status').html('WHITE HAS WON');
                 // alert("HOUSE LANNISTER HAS WON");
                 message = '{"type": "winner", "winner": '+1+'}';
                 socket.send(message)
+                alert("WINNER WINNER CHICKEN DINNER!")
+                $('.leave').css('display', 'inline-block');
+
+                
             }
             
         }
@@ -671,7 +680,7 @@ EVENTS
             Board.playerturn = 1;
         }
         if(incomingMsg.type == 'winner') {
-            if(parseInt(incomingMsg.winner) == Board.player) { alert('WINNER WINNER CHICKEN DINNER!') }
+            if(parseInt(incomingMsg.winner) == Board.player) { alert('WINNER WINNER CHICKEN DINNER!'); }
             if(incomingMsg.winner == '1' && parseInt(incomingMsg.winner) != Board.player) { 
                 alert('HOUSE LANNISTER IS THE WINNER!') 
             }
@@ -684,7 +693,7 @@ EVENTS
             if(incomingMsg.winner == '2') {
                 $('.game-status').html('RED HAS WON');
             }
-            
+
             $('.leave').css('display', 'inline-block');
 
             socket.close();

@@ -7,17 +7,16 @@ var port = process.argv[2];
 var app = express();
 
 var players = 0;
+var timesVisited = 0;
 
 var indexRouter = require('./routes/index');
 var Game = require('./game')
 //var messages = require('./public/javascripts/messages')
 var server = http.createServer(app);
 
-
 var gameStatus = require("./stattrack")
 app.set("view engine", "ejs")
 app.use(express.static(__dirname + "/public"));
-
 
 app.get("/play", indexRouter);
 app.get("/splash", (req, res) => {
@@ -26,18 +25,36 @@ app.get("/splash", (req, res) => {
     lannister: gameStatus.gamesCompletedWhite,
     ongoingGames: gameStatus.gamesInitialized-1
   });
+
 });
 
 app.get("/", (req, res) => {
   res.render("splash.ejs", {
     stark: gameStatus.gamesCompletedRed,
     lannister: gameStatus.gamesCompletedWhite,
-    ongoingGames: gameStatus.gamesInitialized-1
+    ongoingGames: gameStatus.gamesInitialized-1,
   });
+
 });
+
+
 
 const wss = new websocket.Server({ server }); 
 var websockets = {};
+
+// app.use(cookies("myrandomsecret")); // this will encrypt cookies to avoid users tampering with them
+
+// app.use(function(req, res, next) {
+//     var userId = req.signedCookies.userId;
+//     if(userId === undefined) { // no cookie
+//         userId = ++usersCount; // The app now identified a new user
+//         console.log("# Setting new cookie for user " + userId);
+//     }
+//     req.userId = parseInt(userId); // store the parsed userId for the next components
+//     next(); // call on the next component
+// });
+
+
 
 setInterval(function() {
   for (let i in websockets) {
