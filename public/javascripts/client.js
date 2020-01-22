@@ -1,6 +1,14 @@
  //var game = require('../game.js');
  $(document).ready(function(){
+    var x = document.getElementById("nyan"); 
 
+    function playAudio() { 
+    x.play(); 
+    } 
+
+    function pauseAudio() { 
+    x.pause(); 
+    } 
     var gameBoard = [   [-1    ,21   ,-1    ,22     ,-1     ,23     ,-1     ,24],
                         [17    ,-1   ,18    ,-1     ,19     ,-1     ,20     ,-1],
                         [-1    ,13   ,-1    ,14     ,-1     ,15     ,-1     ,16],
@@ -29,8 +37,7 @@
         location: ['0px','64px','128px','192px','256px','320px','384px','448px'],
         
         init: function (){
-            
-           
+        //    new Audio("../data/NyanCatoriginal.wav").play()
             console.log(this.playerTurn+" is player turn, "+this.player+" is player");
             for(row in this.board) {
                 for(column in this.board[row]) {
@@ -102,7 +109,7 @@
             this.whoCanMove();
         },
 
-        // animation: function(piece, pos) {
+                // animation: function(piece, pos) {
         //     piece.element.addClass('move');
         //     document.querySelector('.piece.move#').style.setProperty('--x1', this.location[piece.position[0]]);
         //     document.querySelector('.piece.move#').style.setProperty('--y1', this.location[piece.position[1]]);
@@ -112,11 +119,13 @@
         // },
 
 
+
         render: function(){
             Pieces.forEach(function(piece){
                 piece.element.css('display', 'inline-block');
             });
 
+            playAudio();            
             this.whoCanMove();
         },
         // changes the players turn, and sets the game-status text
@@ -668,6 +677,8 @@ EVENTS
         });
 
         return jumpPieces;
+
+
     }
 
 
@@ -682,13 +693,17 @@ EVENTS
       
         if(incomingMsg.type == 'start'){
             Board.render();
+            $('.game-status').html('White\'s turn!');
         }
 
         if(incomingMsg.playerturn == 1){
             Board.playerturn = 2;
+            $('.game-status').html('White\'s turn!');
+
         }
         if(incomingMsg.playerturn == 2){
             Board.playerturn = 1;
+            $('.game-status').html('Red\'s turn!');
         }
         if(incomingMsg.type == 'winner') {
             if(parseInt(incomingMsg.winner) == Board.player) { alert('WINNER WINNER CHICKEN DINNER!'); }
