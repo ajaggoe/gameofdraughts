@@ -29,7 +29,8 @@
         location: ['0px','64px','128px','192px','256px','320px','384px','448px'],
         
         init: function (){
-        //    new Audio("../data/NyanCatoriginal.wav").play()
+            
+           
             console.log(this.playerTurn+" is player turn, "+this.player+" is player");
             for(row in this.board) {
                 for(column in this.board[row]) {
@@ -100,6 +101,15 @@
 
             this.whoCanMove();
         },
+
+        // animation: function(piece, pos) {
+        //     piece.element.addClass('move');
+        //     document.querySelector('.piece.move#').style.setProperty('--x1', this.location[piece.position[0]]);
+        //     document.querySelector('.piece.move#').style.setProperty('--y1', this.location[piece.position[1]]);
+        //     document.querySelector('.piece#').style.setProperty('--x2', this.location[pos[0]]);
+        //     document.querySelector('.piece#').style.setProperty('--y2', this.location[pos[1]]);
+        //     piece.element.removeClass('move');
+        // },
 
 
         render: function(){
@@ -361,6 +371,7 @@
                     removeAvailableTiles();
                     Board.board[pos[1]][pos[0]] = Board.board[this.position[1]][this.position[0]];
                     Board.board[this.position[1]][this.position[0]] = 0;
+                    // Board.animation(this, pos);
                     this.position = pos;
                 
                     this.makeKing();
@@ -664,7 +675,7 @@ EVENTS
         alert("YOUR WINDOW IS BELOW THE MINIMUM SIZE...\nPLEASE RESIZE YOUR WINDOW");
     }
     
-    var socket = new WebSocket("ws://145.94.230.199:3000");
+    var socket = new WebSocket("ws://localhost:3000");
 
     socket.onmessage = function(event) {
         let incomingMsg = JSON.parse(event.data);

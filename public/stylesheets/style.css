@@ -92,6 +92,22 @@ a {
   cursor: pointer;
 }
 
+.piece.move {
+  animation-duration: 2s;
+  animation-name: move;
+}
+
+@keyframes move {
+  from {
+    top: var(--y1);
+    left: var(--x1);
+  }
+  to {
+    top: var(--y2);
+    left: var(--x2);
+  }
+}
+
 .piece.available.selected {
   border: solid;
   border-color: rgb(56, 241, 56);
